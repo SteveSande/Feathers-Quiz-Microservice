@@ -7,7 +7,7 @@
     <title>Quiz API UI</title>
 </head>
 <body>
-    <form id="form" onsubmit="sendIdea()">
+    <form id="form" onsubmit="sendQuestion()">
         <div id="divQuestion">
             Enter your question:
             <br>
@@ -30,6 +30,9 @@
         <br>
         <br>
         <button type="submit">Submit Question</button>
+        <br>
+        <br>
+        <div id="questions"></div>
     </form>
 
     <!-- this script is specifically for a feathersjs client -->
@@ -51,7 +54,7 @@
 
 
 
-        // FUNCTION: sendIdea()
+        // FUNCTION: sendQuestion()
         // PURPOSE:
         //  An idea has been entered into the html form and the user has pressed the submit button.
         //  This function is called to collect the input and send it to the server.
@@ -59,9 +62,7 @@
         //  e - an Event triggered by user action
         // RETURN: void
 
-        async function sendIdea(e) {
-          console.log("sendIdea");  
-          
+        async function sendQuestion(e) {
           // get the user info
             const question = document.getElementById('question');
             const answer1 = document.getElementById('answer1');
@@ -86,6 +87,29 @@
         }
 
 
+
+        // // FUNCTION: renderQuestion()
+        // // PURPOSE:
+        // //  Each question in the questions array will be displayed on the website.
+        // //  This function receives a single question and appends html to the appropriate div.
+        // // PARAMETERS:
+        // //  idea - an Event triggered by user action
+        // // RETURN: void
+        // function renderIdea(idea) {
+        //     // get the ideas div to append to and appendthe html
+        //     document.getElementById('ideas').innerHTML += 
+        //     `<div class="card bg-secondary my-3">
+        //         <div class="card-body">
+        //         <p class="lead">
+        //             ${idea.text} <strong>(${idea.tech})</strong>
+        //             <br />
+        //             <em>Submitted by ${idea.viewer}</em>
+        //             <br />
+        //             <small>${idea.time}</small>
+        //         </p>
+        //         </div>
+        //     </div>`;
+        // }
 
         
 
