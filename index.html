@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz API UI</title>
+</head>
+<body>
+    <form id="form" onsubmit="sendIdea()">
+        <div id="divQuestion">
+            Enter your question:
+            <br>
+            <input type="text" id="question">
+        </div>
+        <br>
+        <br>
+        <div id="divAnswers">
+            Enter your answers:
+            <br>
+            <input type="text" id="answer1">  
+            <br>
+            <input type="text" id="answer2">  
+            <br>
+            <input type="text" id="answer3">  
+            <br>
+            <input type="text" id="answer4">  
+            <br>
+        </div>
+        <br>
+        <br>
+        <button type="submit">Submit Question</button>
+    </form>
+
+    <!-- this script is specifically for a feathersjs client -->
+    <script src="https://unpkg.com/@feathersjs/client@^4.3.0/dist/feathers.js"></script>
+    <!-- socket.io needs to be on front and back end for complete connection  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+    
+    <!-- functionality for submitting a question -->
+    <script>
+        // Socket.io setup, the api service is on port 3030 under the name ideas
+        // you can access the ideas service on this port using http://127.0.0.1:3030/ideas
+        const socket = io('http://localhost:3030');
+
+        // Init feathers app, it will be referred to as app
+        const app = feathers();
+
+        // Register socket.io to talk to the server
+        app.configure(feathers.socketio(socket));
+
+
+
+        // FUNCTION: sendIdea()
+        // PURPOSE:
+        //  An idea has been entered into the html form and the user has pressed the submit button.
+        //  This function is called to collect the input and send it to the server.
+        // PARAMETERS:
+        //  e - an Event triggered by user action
+        // RETURN: void
+
+        async function sendIdea(e) {
+          console.log("sendIdea");  
+          
+          // get the user info
+            const question = document.getElementById('question');
+            const answer1 = document.getElementById('answer1');
+            const answer2 = document.getElementById('answer2');
+            const answer3 = document.getElementById('answer3');
+            const answer4 = document.getElementById('answer4');
+
+            let answers = [answer1.value, answer2.value, answer3.value, answer4.value];
+
+            // Create new idea
+            app.service('questions').create({
+                question: question.value,
+                answers: answers
+            });
+
+            // Clear inputs since the user submitted what they entered and can start a new entry
+            question.value = '';
+            answer1.value = '';
+            answer2.value = '';
+            answer3.value = '';
+            answer4.value = '';
+        }
+
+
+
+        
+
+        </script>
+
+</body>
+</html>
