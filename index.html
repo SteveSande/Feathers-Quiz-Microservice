@@ -41,6 +41,12 @@
             <button type="submit">Delete Selected</button>
         </div>
     </form>
+    <form id="formUpdate" onsubmit="updateQuestion()">
+        <b>Update Question:</b>
+        <br>
+        <button type="submit">Update Selected</button>
+
+    </form>
 
     <!-- this script is specifically for a feathersjs client -->
     <script src="https://unpkg.com/@feathersjs/client@^4.3.0/dist/feathers.js"></script>
@@ -106,16 +112,60 @@
         async function removeQuestion() {
             
             const collection = document.getElementById("questions").children;
-            console.log(collection);
             for (let item of collection) {
                 if (item.id.includes("question") && item.checked) {
                     // Delete a question
-                    console.log(item.id.match(/\d+/).toString());
                     app.service('questions').remove(item.id.match(/\d+/).toString());
                 }
             }
+        }
 
-            
+
+
+        // FUNCTION: updateQuestion()
+        // PURPOSE:
+        //  An question has been entered into the html form and the user has pressed the submit button.
+        //  This function is called to collect the input and send it to the server.
+        // PARAMETERS:
+        //  e - an Event triggered by user action
+        // RETURN: void
+
+        async function updateQuestion() {
+            // get the user info
+            const question = document.getElementById('question');
+            const answer1 = document.getElementById('answer1');
+            const answer2 = document.getElementById('answer2');
+            const answer3 = document.getElementById('answer3');
+            const answer4 = document.getElementById('answer4');
+
+            let answers = [answer1.value, answer2.value, answer3.value, answer4.value];
+
+            const collection = document.getElementById("questions").children;
+            let id;
+            for (let item of collection) {
+                if (item.id.includes("question") && item.checked) {
+                    // Delete a question
+                    id = item.id.match(/\d+/).toString();
+                }
+            }
+
+            console.log(id);
+            console.log(question.value);
+            console.log(answers);
+            // Create new question
+            app.service('questions').update(
+            id,
+            {
+                question: question.value,
+                answers: answers
+            });
+
+            // Clear inputs since the user submitted what they entered and can start a new entry
+            question.value = '';
+            answer1.value = '';
+            answer2.value = '';
+            answer3.value = '';
+            answer4.value = '';
         }
 
 

@@ -54,8 +54,17 @@ class QuestionService {
         if (currentElement.id === id) {
           index = currentElement.index;
         }
-      })
+      });
       this.questions.splice(index, 1);
+    }
+
+    async update(id, data) {
+      this.questions.forEach((currentElement) => {
+        if (currentElement.id == id) {
+          currentElement.question = data.question;
+          currentElement.answers = data.answers;
+        }
+      });
     }
 }
 
