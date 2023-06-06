@@ -49,7 +49,7 @@ class QuestionService {
       this.questions.splice(id, 1);
     }
 }
-  
+
 const app = express(feathers());
 
 // app.use() adds middleware functions to the Express middleware stack
