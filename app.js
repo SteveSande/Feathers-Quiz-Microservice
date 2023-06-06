@@ -44,6 +44,10 @@ class QuestionService {
       // returns the idea struct
       return question;
     }
+
+    async remove(id) {
+      this.questions.splice(id, 1);
+    }
 }
   
 const app = express(feathers());
@@ -71,6 +75,6 @@ const PORT = process.env.PORT || 3030;
 app.listen(PORT);
 
 app.service('questions').create({
-  question: 'Build a cool app',
-  answers: ["test", "test2", "test3", "test4"]
+  question: 'Who started the fire?',
+  answers: ["Patrick", "Jonathan", "Jacky", "Kristian"]
 });

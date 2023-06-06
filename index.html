@@ -7,16 +7,17 @@
     <title>Quiz API UI</title>
 </head>
 <body>
-    <form id="form" onsubmit="sendQuestion()">
+    <form id="formCreate" onsubmit="sendQuestion()">
+        <b>Add Question:</b>
         <div id="divQuestion">
-            Enter your question:
+            Enter your question
             <br>
             <input type="text" id="question">
         </div>
         <br>
         <br>
         <div id="divAnswers">
-            Enter your answers:
+            Enter your answers
             <br>
             <input type="text" id="answer1">  
             <br>
@@ -32,7 +33,13 @@
         <button type="submit">Submit Question</button>
         <br>
         <br>
-        <div id="questions">Existing Questions:</div>
+    </form>
+    <form id="formDelete" onsubmit="removeQuestion(2)">
+        <div id="questions">
+            <b>Existing Questions:</b>
+            <br>
+            <button type="submit">Delete Selected</button>
+        </div>
     </form>
 
     <!-- this script is specifically for a feathersjs client -->
@@ -40,7 +47,7 @@
     <!-- socket.io needs to be on front and back end for complete connection  -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
     
-    <!-- functionality for submitting a question -->
+    <!-- CRUD functionality for quiz questions -->
     <script>
         // Socket.io setup, the api service is on port 3030 under the name ideas
         // you can access the ideas service on this port using http://127.0.0.1:3030/ideas
@@ -63,7 +70,7 @@
         // RETURN: void
 
         async function sendQuestion(e) {
-          // get the user info
+            // get the user info
             const question = document.getElementById('question');
             const answer1 = document.getElementById('answer1');
             const answer2 = document.getElementById('answer2');
@@ -72,7 +79,7 @@
 
             let answers = [answer1.value, answer2.value, answer3.value, answer4.value];
 
-            // Create new idea
+            // Create new question
             app.service('questions').create({
                 question: question.value,
                 answers: answers
@@ -88,6 +95,22 @@
 
 
 
+        // FUNCTION: removeQuestion()
+        // PURPOSE:
+        //  An question has been entered into the html form and the user has pressed the submit button.
+        //  This function is called to collect the input and send it to the server.
+        // PARAMETERS:
+        //  e - an Event triggered by user action
+        // RETURN: void
+
+        async function removeQuestion(id) {
+            console.log("removeQuestion")
+            // Delete a question
+            app.service('questions').remove(id);
+        }
+
+
+
         // FUNCTION: renderQuestion()
         // PURPOSE:
         //  Each question in the questions array will be displayed on the website.
@@ -96,17 +119,20 @@
         //  idea - an Event triggered by user action
         // RETURN: void
         function renderQuestion(question) {
-            console.log(question);
             // get the ideas div to append to and appendthe html
             document.getElementById('questions').innerHTML += 
             `
-            <p>${question.question}</p>
-            <ul>
-                <li>${question.answers[0]}</li>
-                <li>${question.answers[1]}</li>
-                <li>${question.answers[2]}</li>
-                <li>${question.answers[3]}</li>
-            </ul>
+            <br>
+            <br>
+            <input id="${question.id}" type="checkbox">
+                <p>${question.question}</p>
+                <ul>
+                    <li>${question.answers[0]}</li>
+                    <li>${question.answers[1]}</li>
+                    <li>${question.answers[2]}</li>
+                    <li>${question.answers[3]}</li>
+                </ul>
+            </input>
             `;
         }
 
