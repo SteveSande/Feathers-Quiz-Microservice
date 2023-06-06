@@ -18,7 +18,9 @@ const socketio = require('@feathersjs/socketio');
 
 // The question service
 class QuestionService {
-    // sets up an empy array in the object
+  currentID = 0;  
+  
+  // sets up an empy array in the object
     constructor() {
       this.questions = [];
     }
@@ -33,20 +35,27 @@ class QuestionService {
     async create(data) {
       // setting up the informal struct based on user data and data structure length
       const question = {
-        id: this.questions.length,
+        id: this.currentID,
         question: data.question,
         answers: data.answers,
       };
   
       // adds the idea struct to the array
       this.questions.push(question);
+      this.currentID++;
   
       // returns the idea struct
       return question;
     }
 
     async remove(id) {
-      this.questions.splice(id, 1);
+      let index;
+      this.questions.forEach((currentElement) => {
+        if (currentElement.id === id) {
+          index = currentElement.index;
+        }
+      })
+      this.questions.splice(index, 1);
     }
 }
 

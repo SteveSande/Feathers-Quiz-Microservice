@@ -34,7 +34,7 @@
         <br>
         <br>
     </form>
-    <form id="formDelete" onsubmit="removeQuestion(0)">
+    <form id="formDelete" onsubmit="removeQuestion()">
         <div id="questions">
             <b>Existing Questions:</b>
             <br>
@@ -103,10 +103,19 @@
         //  e - an Event triggered by user action
         // RETURN: void
 
-        async function removeQuestion(id) {
-            console.log("removeQuestion")
-            // Delete a question
-            app.service('questions').remove(id);
+        async function removeQuestion() {
+            
+            const collection = document.getElementById("questions").children;
+            console.log(collection);
+            for (let item of collection) {
+                if (item.id.includes("question") && item.checked) {
+                    // Delete a question
+                    console.log(item.id.match(/\d+/).toString());
+                    app.service('questions').remove(item.id.match(/\d+/).toString());
+                }
+            }
+
+            
         }
 
 
@@ -124,7 +133,7 @@
             `
             <br>
             <br>
-            <input id="${question.id}" type="checkbox">
+            <input id="question${question.id}" type="checkbox">
                 <p>${question.question}</p>
                 <ul>
                     <li>${question.answers[0]}</li>
