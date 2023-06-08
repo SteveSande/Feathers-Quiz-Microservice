@@ -10,21 +10,30 @@
 <body>
     <div class="container">
         <div id="questions">
-            <b>Existing Questions:</b>
+            <b>Existing Questions</b>
             <br>
         </div>
         <div id="questionAdmin">
-            <form id="formCreate" onsubmit="sendQuestion()">
-                <b>Add Question:</b>
-                <div id="divQuestion">
-                    Enter your question
-                    <br>
-                    <input type="text" id="question">
-                </div>
+            <form id="formCreate" onsubmit="handleSubmit()">
+                <b>Question Administration</b>
                 <br>
+                Select Operation:
                 <br>
-                <div id="divAnswers">
-                    Enter your answers
+                <input type="radio" id="createQuestion" name="operation" value="createQuestion">
+                <label for="createQuestion">Create Question</label>       
+                <br>
+                <input type="radio" id="updateQuestion" name="operation" value="updateQuestion">
+                <label for="updateQuestion">Update Question</label>   
+                <br>        
+                <input type="radio" id="removeQuestion" name="operation" value="removeQuestion">
+                <label for="removeQuestion">Remove Question</label>               
+                <br><br>   
+                Question
+                <br>
+                <input type="text" id="question">
+                <br><br>
+
+                    Answers
                     <br>
                     <input type="text" id="answer1">  
                     <br>
@@ -34,24 +43,12 @@
                     <br>
                     <input type="text" id="answer4">  
                     <br>
-                </div>
-                <br>
-                <br>
+ 
+                <br><br>
                 <button type="submit">Submit Question</button>
                 <br>
-                <br>
             </form>
-            <form id="formDelete" onsubmit="removeQuestion()">
-                <b>Existing Questions:</b>
-                <br>
-                <button type="submit">Delete Selected</button>
-            </form>
-            <form id="formUpdate" onsubmit="updateQuestion()">
-                <b>Update Question:</b>
-                <br>
-                <button type="submit">Update Selected</button>
-
-            </form>
+            
         </div>
     </div>
 
@@ -82,7 +79,7 @@
         //  e - an Event triggered by user action
         // RETURN: void
 
-        async function sendQuestion(e) {
+        async function createQuestion(e) {
             // get the user info
             const question = document.getElementById('question');
             const answer1 = document.getElementById('answer1');
@@ -206,6 +203,59 @@
 
 
 
+        // FUNCTION: renderQuestion()
+        // PURPOSE:
+        //  Each question in the questions array will be displayed on the website.
+        //  This function receives a single question and appends html to the appropriate div.
+        // PARAMETERS:
+        //  idea - an Event triggered by user action
+        // RETURN: void
+
+        function getSelectedRadio() {
+            let selected = document.querySelector('input[name="operation"]:checked');
+            
+            if (selected.value === "deleteQuestion") {
+                document.getElementById("question").disabled = true;
+                document.getElementById("answer1").disabled = true;
+                document.getElementById("answer2").disabled = true;
+                document.getElementById("answer3").disabled = true;
+                document.getElementById("answer4").disabled = true;
+            } 
+            else 
+            {
+                document.getElementById("question").disabled = false;
+                document.getElementById("answer1").disabled = false;
+                document.getElementById("answer2").disabled = false;
+                document.getElementById("answer3").disabled = false;
+                document.getElementById("answer4").disabled = false;
+            }
+        }
+
+
+        // FUNCTION: renderQuestion()
+        // PURPOSE:
+        //  Each question in the questions array will be displayed on the website.
+        //  This function receives a single question and appends html to the appropriate div.
+        // PARAMETERS:
+        //  idea - an Event triggered by user action
+        // RETURN: void
+
+        function handleSubmit() {
+            let selected = document.querySelector('input[name="operation"]:checked');
+            
+            if (selected.value === "createQuestion") {
+                createQuestion();
+            } 
+            else if (selected.value === "updateQuestion") {
+                updateQuestion();
+            }
+            else {
+                removeQuestion();
+            }
+        }
+
+
+
         // FUNCTION: init()
         // PURPOSE:
         //  This function 
@@ -223,8 +273,13 @@
         }
 
         init();
+        let checkboxes = document.querySelectorAll("input[name=operation]");
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', getSelectedRadio);
+        })
+       
 
-        </script>
+    </script>
 
 </body>
 </html>
