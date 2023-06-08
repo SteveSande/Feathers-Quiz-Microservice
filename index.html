@@ -4,49 +4,56 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
     <title>Quiz API UI</title>
 </head>
 <body>
-    <form id="formCreate" onsubmit="sendQuestion()">
-        <b>Add Question:</b>
-        <div id="divQuestion">
-            Enter your question
-            <br>
-            <input type="text" id="question">
-        </div>
-        <br>
-        <br>
-        <div id="divAnswers">
-            Enter your answers
-            <br>
-            <input type="text" id="answer1">  
-            <br>
-            <input type="text" id="answer2">  
-            <br>
-            <input type="text" id="answer3">  
-            <br>
-            <input type="text" id="answer4">  
-            <br>
-        </div>
-        <br>
-        <br>
-        <button type="submit">Submit Question</button>
-        <br>
-        <br>
-    </form>
-    <form id="formDelete" onsubmit="removeQuestion()">
+    <div class="container">
         <div id="questions">
             <b>Existing Questions:</b>
             <br>
-            <button type="submit">Delete Selected</button>
         </div>
-    </form>
-    <form id="formUpdate" onsubmit="updateQuestion()">
-        <b>Update Question:</b>
-        <br>
-        <button type="submit">Update Selected</button>
+        <div id="questionAdmin">
+            <form id="formCreate" onsubmit="sendQuestion()">
+                <b>Add Question:</b>
+                <div id="divQuestion">
+                    Enter your question
+                    <br>
+                    <input type="text" id="question">
+                </div>
+                <br>
+                <br>
+                <div id="divAnswers">
+                    Enter your answers
+                    <br>
+                    <input type="text" id="answer1">  
+                    <br>
+                    <input type="text" id="answer2">  
+                    <br>
+                    <input type="text" id="answer3">  
+                    <br>
+                    <input type="text" id="answer4">  
+                    <br>
+                </div>
+                <br>
+                <br>
+                <button type="submit">Submit Question</button>
+                <br>
+                <br>
+            </form>
+            <form id="formDelete" onsubmit="removeQuestion()">
+                <b>Existing Questions:</b>
+                <br>
+                <button type="submit">Delete Selected</button>
+            </form>
+            <form id="formUpdate" onsubmit="updateQuestion()">
+                <b>Update Question:</b>
+                <br>
+                <button type="submit">Update Selected</button>
 
-    </form>
+            </form>
+        </div>
+    </div>
 
     <!-- this script is specifically for a feathersjs client -->
     <script src="https://unpkg.com/@feathersjs/client@^4.3.0/dist/feathers.js"></script>
@@ -110,11 +117,13 @@
         // RETURN: void
 
         async function removeQuestion() {
-            
+            console.log("removeQuestion");
             const collection = document.getElementById("questions").children;
             for (let item of collection) {
+                console.log(item)
                 if (item.id.includes("question") && item.checked) {
                     // Delete a question
+                    console.log("removing");
                     app.service('questions').remove(item.id.match(/\d+/).toString());
                 }
             }
@@ -181,17 +190,17 @@
             // get the ideas div to append to and appendthe html
             document.getElementById('questions').innerHTML += 
             `
-            <br>
-            <br>
-            <input id="question${question.id}" type="checkbox">
-                <p>${question.question}</p>
-                <ul>
-                    <li>${question.answers[0]}</li>
-                    <li>${question.answers[1]}</li>
-                    <li>${question.answers[2]}</li>
-                    <li>${question.answers[3]}</li>
-                </ul>
-            </input>
+                <br>
+                <br>
+                <input id="question${question.id}" type="checkbox">
+                    <p>${question.question}</p>
+                    <ul>
+                        <li>${question.answers[0]}</li>
+                        <li>${question.answers[1]}</li>
+                        <li>${question.answers[2]}</li>
+                        <li>${question.answers[3]}</li>
+                    </ul>
+                </input>
             `;
         }
 
