@@ -49,13 +49,13 @@ class QuestionService {
     }
 
     async remove(id) {
-      let index;
+      let index = 0;
       this.questions.forEach((currentElement) => {
-        if (currentElement.id === id) {
-          index = currentElement.index;
+        if (currentElement.id == id) {
+          this.questions.splice(index, 1);
         }
+        index++;
       });
-      this.questions.splice(index, 1);
     }
 
     async update(id, data) {

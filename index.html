@@ -117,16 +117,19 @@
         async function removeQuestion() {
             table = document.getElementById("questionsTable");
             numberOfRows = table.rows.length;
+            let id;
+
             for (let i = 0; i < numberOfRows; i++) {
                 const collection = table.rows[i].children[0].children;
                 for (let item of collection) {
                     if (item.id.includes("question") && item.checked) {
-                        
-                        // Delete a question
-                        app.service('questions').remove(item.id.match(/\d+/).toString());
+                        console.log(item.id.match(/\d+/).toString());
+                        id = item.id.match(/\d+/).toString();
                     }
                 }
-            }      
+            }     
+            
+            app.service('questions').remove(id);
         }
 
 
@@ -151,7 +154,6 @@
 
             table = document.getElementById("questionsTable");
             numberOfRows = table.rows.length;
-            const collection = document.getElementById("questions").children;
             let id;
 
             for (let i = 0; i < numberOfRows; i++) {
