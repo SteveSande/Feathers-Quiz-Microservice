@@ -96,3 +96,17 @@ app.service('questions').create({
   question: 'Who started the fire?',
   answers: ["Patrick", "Jonathan", "Jacky", "Kristian"]
 });
+
+app.service('questions').create({
+  question: 'What is the best programming language?',
+  answers: ["JavaScript", "C#", "C", "Assembly"]
+});
+
+app.service('questions').create({
+  question: 'Which of the following is true?',
+  answers: [
+    "If you sever the outer ring of bark on a tree then the tree will die because sap doesn't flow to the roots", 
+    "If you sever the outer ring of bark on a tree then the tree will die because sap doesn't flow to the leaves", 
+    "Big foot exists", 
+    "Gold team rules"]
+});

@@ -12,6 +12,7 @@
         <div id="questions">
             <b>Existing Questions</b>
             <br>
+            <table id="questionsTable"></table>
         </div>
         <div id="questionAdmin">
             <form id="formCreate" onsubmit="handleSubmit()">
@@ -30,22 +31,22 @@
                 <br><br>   
                 Question
                 <br>
-                <input type="text" id="question">
+                <input type="text" id="question" size="50">
                 <br><br>
 
                     Answers
                     <br>
-                    <input type="text" id="answer1">  
+                    <input type="text" id="answer1" size="50">  
                     <br>
-                    <input type="text" id="answer2">  
+                    <input type="text" id="answer2" size="50">  
                     <br>
-                    <input type="text" id="answer3">  
+                    <input type="text" id="answer3" size="50">  
                     <br>
-                    <input type="text" id="answer4">  
+                    <input type="text" id="answer4" size="50">  
                     <br>
  
                 <br><br>
-                <button type="submit">Submit Question</button>
+                <button type="submit">Submit Request</button>
                 <br>
             </form>
             
@@ -114,16 +115,18 @@
         // RETURN: void
 
         async function removeQuestion() {
-            console.log("removeQuestion");
-            const collection = document.getElementById("questions").children;
-            for (let item of collection) {
-                console.log(item)
-                if (item.id.includes("question") && item.checked) {
-                    // Delete a question
-                    console.log("removing");
-                    app.service('questions').remove(item.id.match(/\d+/).toString());
+            table = document.getElementById("questionsTable");
+            numberOfRows = table.rows.length;
+            for (let i = 0; i < numberOfRows; i++) {
+                const collection = table.rows[i].children[0].children;
+                for (let item of collection) {
+                    if (item.id.includes("question") && item.checked) {
+                        
+                        // Delete a question
+                        app.service('questions').remove(item.id.match(/\d+/).toString());
+                    }
                 }
-            }
+            }      
         }
 
 
@@ -146,18 +149,21 @@
 
             let answers = [answer1.value, answer2.value, answer3.value, answer4.value];
 
+            table = document.getElementById("questionsTable");
+            numberOfRows = table.rows.length;
             const collection = document.getElementById("questions").children;
             let id;
-            for (let item of collection) {
-                if (item.id.includes("question") && item.checked) {
-                    // Delete a question
-                    id = item.id.match(/\d+/).toString();
-                }
-            }
 
-            console.log(id);
-            console.log(question.value);
-            console.log(answers);
+            for (let i = 0; i < numberOfRows; i++) {
+                const collection = table.rows[i].children[0].children;
+                for (let item of collection) {
+                    if (item.id.includes("question") && item.checked) {
+                        id = item.id.match(/\d+/).toString();
+                    }
+                }
+            }      
+
+
             // Create new question
             app.service('questions').update(
             id,
@@ -185,11 +191,13 @@
         // RETURN: void
         function renderQuestion(question) {
             // get the ideas div to append to and appendthe html
-            document.getElementById('questions').innerHTML += 
+            document.getElementById('questionsTable').innerHTML += 
             `
-                <br>
-                <br>
-                <input id="question${question.id}" type="checkbox">
+                <tr>
+                    <td>
+                        <input id="question${question.id}" type="checkbox">
+                    </td>
+                    <td>
                     <p>${question.question}</p>
                     <ul>
                         <li>${question.answers[0]}</li>
@@ -197,7 +205,8 @@
                         <li>${question.answers[2]}</li>
                         <li>${question.answers[3]}</li>
                     </ul>
-                </input>
+                    </td>                 
+                </tr
             `;
         }
 
@@ -213,21 +222,49 @@
 
         function getSelectedRadio() {
             let selected = document.querySelector('input[name="operation"]:checked');
-            
-            if (selected.value === "deleteQuestion") {
-                document.getElementById("question").disabled = true;
-                document.getElementById("answer1").disabled = true;
-                document.getElementById("answer2").disabled = true;
-                document.getElementById("answer3").disabled = true;
-                document.getElementById("answer4").disabled = true;
+            const question = document.getElementById("question");
+            const answer1 = document.getElementById("answer1");
+            const answer2 = document.getElementById("answer2");
+            const answer3 = document.getElementById("answer3");
+            const answer4 = document.getElementById("answer4");
+
+            if (selected.value === "removeQuestion") {
+                question.disabled = true;
+                answer1.disabled = true;
+                answer2.disabled = true;
+                answer3.disabled = true;
+                answer4.disabled = true;
             } 
-            else 
-            {
-                document.getElementById("question").disabled = false;
-                document.getElementById("answer1").disabled = false;
-                document.getElementById("answer2").disabled = false;
-                document.getElementById("answer3").disabled = false;
-                document.getElementById("answer4").disabled = false;
+            else {
+                question.disabled = false;
+                answer1.disabled = false;
+                answer2.disabled = false;
+                answer3.disabled = false;
+                answer4.disabled = false;
+            }
+
+            if (selected.value === "updateQuestion") {
+                table = document.getElementById("questionsTable");
+                numberOfRows = table.rows.length;
+                const collection = document.getElementById("questions").children;
+                for (let i = 0; i < numberOfRows; i++) {
+                    const collection = table.rows[i].children[0].children;
+                    for (let item of collection) {
+                        if (item.id.includes("question") && item.checked) {
+                            const questionInfo = table.rows[i].children[1].children;
+                            question.value = questionInfo[0].innerHTML;
+                            const answerInfo = questionInfo[1].children;
+                            answer1.value = answerInfo[0].innerHTML;
+                            answer2.value = answerInfo[1].innerHTML;
+                            answer3.value = answerInfo[2].innerHTML;
+                            answer4.value = answerInfo[3].innerHTML;
+                        }
+                    }
+                }    
+                
+            }
+            else {
+                question.value = "";
             }
         }
 
