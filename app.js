@@ -1,9 +1,9 @@
 // FILE: app.js
-// AUTHOR: Traversy Media https://www.youtube.com/watch?v=8y33WCVkLwc
+// AUTHOR: Steve Sande adapted from Traversy Media https://www.youtube.com/watch?v=8y33WCVkLwc
 // DATE CREATED: May 31, 2023
 // DESCRIPTION:
 //  This is a service prototype for storing multiple choice questions and their answers using Feathers.js
-//  The contents of this file provide the back end functionality.
+//  The contents of this file provide the microservice functionality.
 
 
 // feathers provides the API to access and modify a data store
@@ -92,16 +92,15 @@ const PORT = process.env.PORT || 3030;
 
 app.listen(PORT);
 
+// create some generic questions
 app.service('questions').create({
   question: 'Who started the fire?',
   answers: ["Patrick", "Jonathan", "Jacky", "Kristian"]
 });
-
 app.service('questions').create({
   question: 'What is the best programming language?',
   answers: ["JavaScript", "C#", "C", "Assembly"]
 });
-
 app.service('questions').create({
   question: 'Which of the following is true?',
   answers: [
