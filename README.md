@@ -11,4 +11,4 @@ Future additions or improvements are possible if it makes sense.
 
 To use:
 "npm start" to start the service.
-"Go Live" using the Go Live extension to access the admin page.
+"Go Live" using the Live Server extension to access the admin page.
