@@ -10,5 +10,6 @@ Only admin functionality has been implemented thus far because that fulfilled th
 Future additions or improvements are possible if it makes sense.
 
 To use:
-"npm start" to start the service.
-"Go Live" using the Live Server extension to access the admin page.
+1. "npm i" to install dependencies.
+2. "npm start" to start the service.
+3. "Go Live" using the Live Server extension to access the admin page.

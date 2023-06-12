@@ -16,56 +16,84 @@ const express = require('@feathersjs/express');
 // https://www.youtube.com/watch?v=ZKEqqIO7n-k
 const socketio = require('@feathersjs/socketio');
 
-// The question service
+
+// CLASS: QuestionService
+// DESCRIPTION:
+//  Feathers.js services are set up as classes.
+//  This class provides the data structure for storing questions and applicable CRUD methods.
 class QuestionService {
+  // keep a questions tally running to act as a primary key
   currentID = 0;  
   
-  // sets up an empy array in the object
-    constructor() {
-      this.questions = [];
-    }
-  
-    // find() is a service method, all service methods must be async
-    // find() returns all the resources in a service, so in this case that is the ideas array
-    async find() {
-      return this.questions;
-    }
-  
-    // creates an informal struct and adds it to the array
-    async create(data) {
-      // setting up the informal struct based on user data and data structure length
-      const question = {
-        id: this.currentID,
-        question: data.question,
-        answers: data.answers,
-      };
-  
-      // adds the idea struct to the array
-      this.questions.push(question);
-      this.currentID++;
-  
-      // returns the idea struct
-      return question;
-    }
+  // METHOD: constructor()
+  // DESCRIPTION: 
+  //  Sets up the array for storing questions.
+  constructor() {
+    this.questions = [];
+  }
 
-    async remove(id) {
-      let index = 0;
-      this.questions.forEach((currentElement) => {
-        if (currentElement.id == id) {
-          this.questions.splice(index, 1);
-        }
-        index++;
-      });
-    }
+  // METHOD: find()
+  // DESCRIPTION: 
+  //  This is a service method. All service methods must be async.
+  //  It returns all the resources in a service, so in this case that is the questions array.
+  // RETURNS: the questions array
+  async find() {
+    return this.questions;
+  }
 
-    async update(id, data) {
-      this.questions.forEach((currentElement) => {
-        if (currentElement.id == id) {
-          currentElement.question = data.question;
-          currentElement.answers = data.answers;
-        }
-      });
-    }
+  // METHOD: create()
+  // DESCRIPTION: 
+  //  This is a service method. All service methods must be async.
+  //  It adds a new question to the questions array.
+  // RETURNS: the question struct that was added
+  async create(data) {
+    // setting up the informal struct based on user data and data structure length
+    const question = {
+      id: this.currentID,
+      question: data.question,
+      answers: data.answers,
+    };
+
+    // adds the question struct to the array
+    this.questions.push(question);
+    this.currentID++;
+
+    // returns the question struct
+    return question;
+  }
+
+  // METHOD: remove()
+  // DESCRIPTION: 
+  //  This is a service method. All service methods must be async.
+  //  It removes a question from the questions array.
+  // RETURNS: an array of the removed questions
+  async remove(id) {
+    let removedQuestions = []
+    let index = 0;
+    this.questions.forEach((currentElement) => {
+      if (currentElement.id == id) {
+        removedQuestions.push(this.questions.splice(index, 1));
+      }
+      index++;
+    });
+
+    return removedQuestions;
+  }
+
+  // METHOD: update()
+  // DESCRIPTION: 
+  //  This is a service method. All service methods must be async.
+  //  It updates the data for an existing question in the questions array.
+  // RETURNS: the updated question data
+  async update(id, data) {
+    this.questions.forEach((currentElement) => {
+      if (currentElement.id == id) {
+        currentElement.question = data.question;
+        currentElement.answers = data.answers;
+        return data;
+      }
+    });
+  }
 }
 
 const app = express(feathers());
@@ -92,7 +120,7 @@ const PORT = process.env.PORT || 3030;
 
 app.listen(PORT);
 
-// create some generic questions
+// create some generic questions to work with
 app.service('questions').create({
   question: 'Who started the fire?',
   answers: ["Patrick", "Jonathan", "Jacky", "Kristian"]
