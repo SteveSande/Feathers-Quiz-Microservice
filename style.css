@@ -2,7 +2,3 @@
     display: flex;
     column-gap: 40px;
 }
-
-li:focus {
-    background: lightgreen;
-}

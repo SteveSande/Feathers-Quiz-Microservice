@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Quiz API UI</title>
+    <title>Quiz Administration</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.png">
 </head>
 <body>
     <div class="container">
@@ -14,10 +15,11 @@
             <br>
             <table id="questionsTable"></table>
         </div>
+        
         <div id="questionAdmin">
-            <form id="formCreate" onsubmit="handleSubmit()">
+            <form id="frmAdmin" onsubmit="handleSubmit()">
                 <b>Question Administration</b>
-                <br>
+                <br><br>
                 Select Operation:
                 <br>
                 <input type="radio" id="createQuestion" name="operation" value="createQuestion">
@@ -29,27 +31,27 @@
                 <input type="radio" id="removeQuestion" name="operation" value="removeQuestion">
                 <label for="removeQuestion">Remove Question</label>               
                 <br><br>   
+                
                 Question
                 <br>
                 <input type="text" id="question" size="50">
                 <br><br>
 
-                    Answers
-                    <br>
-                    <input type="text" id="answer1" size="50">  
-                    <br>
-                    <input type="text" id="answer2" size="50">  
-                    <br>
-                    <input type="text" id="answer3" size="50">  
-                    <br>
-                    <input type="text" id="answer4" size="50">  
-                    <br>
+                Answers
+                <br>
+                <input type="text" id="answer1" size="50">  
+                <br>
+                <input type="text" id="answer2" size="50">  
+                <br>
+                <input type="text" id="answer3" size="50">  
+                <br>
+                <input type="text" id="answer4" size="50">  
+                <br>
  
                 <br><br>
                 <button type="submit">Submit Request</button>
                 <br>
-            </form>
-            
+            </form>      
         </div>
     </div>
 
@@ -60,140 +62,137 @@
     
     <!-- CRUD functionality for quiz questions -->
     <script>
-        // Socket.io setup, the api service is on port 3030 under the name ideas
+        // socket.io setup, the api service is on port 3030 under the name ideas
         // you can access the ideas service on this port using http://127.0.0.1:3030/ideas
         const socket = io('http://localhost:3030');
 
-        // Init feathers app, it will be referred to as app
+        // init feathers app as app
         const app = feathers();
 
-        // Register socket.io to talk to the server
+        // register socket.io to talk to the server
         app.configure(feathers.socketio(socket));
 
+        // the page elements will be used by many of the following functions
+        const question = document.getElementById('question');
+        const answer1 = document.getElementById('answer1');
+        const answer2 = document.getElementById('answer2');
+        const answer3 = document.getElementById('answer3');
+        const answer4 = document.getElementById('answer4');
+        const table = document.getElementById("questionsTable");
+        const checkboxes = document.querySelectorAll("input[name=operation]");
+
+        // listen for changes to what option is selected and take action accordingly
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', handleOptionSelect);
+        });
 
 
-        // FUNCTION: sendQuestion()
+
+        // FUNCTION: createQuestion()
         // PURPOSE:
-        //  An question has been entered into the html form and the user has pressed the submit button.
-        //  This function is called to collect the input and send it to the server.
+        //  The user has selected "Create Question" option, filled out the form, and pressed the submit button.
+        //  This function is called to collect the input from the form and send it to the microservice for processing.
         // PARAMETERS:
         //  e - an Event triggered by user action
         // RETURN: void
 
         async function createQuestion(e) {
-            // get the user info
-            const question = document.getElementById('question');
-            const answer1 = document.getElementById('answer1');
-            const answer2 = document.getElementById('answer2');
-            const answer3 = document.getElementById('answer3');
-            const answer4 = document.getElementById('answer4');
-
+            // put the answer info into an array
             let answers = [answer1.value, answer2.value, answer3.value, answer4.value];
 
-            // Create new question
+            // send the new question details to the microservice
             app.service('questions').create({
                 question: question.value,
                 answers: answers
             });
 
-            // Clear inputs since the user submitted what they entered and can start a new entry
-            question.value = '';
-            answer1.value = '';
-            answer2.value = '';
-            answer3.value = '';
-            answer4.value = '';
+            // clear inputs so the user can quickly perform another action
+            clearFormData();
         }
 
 
 
         // FUNCTION: removeQuestion()
         // PURPOSE:
-        //  An question has been entered into the html form and the user has pressed the submit button.
-        //  This function is called to collect the input and send it to the server.
+        //  The user has selected "Remove Question" option, selected questions to remove, and pressed the submit button.
+        //  This function is called to find the id of the selected question and send it to the microservice for processing.
         // PARAMETERS:
         //  e - an Event triggered by user action
         // RETURN: void
 
         async function removeQuestion() {
-            table = document.getElementById("questionsTable");
+            // prepare to locate selected question id's     
             numberOfRows = table.rows.length;
-            let id;
 
+            // loop through the table one row at a time
             for (let i = 0; i < numberOfRows; i++) {
-                const collection = table.rows[i].children[0].children;
-                for (let item of collection) {
-                    if (item.id.includes("question") && item.checked) {
-                        console.log(item.id.match(/\d+/).toString());
-                        id = item.id.match(/\d+/).toString();
-                    }
+                // make the checkbox (current row -> first column of that row -> first HTML element in that column)
+                const checkbox = table.rows[i].children[0].children[0];
+                
+                // check if the checkbox is checked
+                if (checkbox.checked) {
+                    // find the portion of the html id that contains the question id
+                    let id = checkbox.id.match(/\d+/).toString();
+                    
+                    // send the id of the question to remove to the microservice
+                    app.service('questions').remove(id);
                 }
             }     
-            
-            app.service('questions').remove(id);
         }
 
 
 
         // FUNCTION: updateQuestion()
         // PURPOSE:
-        //  An question has been entered into the html form and the user has pressed the submit button.
-        //  This function is called to collect the input and send it to the server.
+        //  The user has selected "Update Question" option, filled out the form, and pressed the submit button.
+        //  This function is called to collect the input from the form and send it to the microservice for processing.
         // PARAMETERS:
         //  e - an Event triggered by user action
         // RETURN: void
 
         async function updateQuestion() {
-            // get the user info
-            const question = document.getElementById('question');
-            const answer1 = document.getElementById('answer1');
-            const answer2 = document.getElementById('answer2');
-            const answer3 = document.getElementById('answer3');
-            const answer4 = document.getElementById('answer4');
-
+            // put the answer info into an array
             let answers = [answer1.value, answer2.value, answer3.value, answer4.value];
 
-            table = document.getElementById("questionsTable");
+            // prepare to locate selected question id
             numberOfRows = table.rows.length;
-            let id;
 
+            // loop through the table one row at a time
             for (let i = 0; i < numberOfRows; i++) {
-                const collection = table.rows[i].children[0].children;
-                for (let item of collection) {
-                    if (item.id.includes("question") && item.checked) {
-                        id = item.id.match(/\d+/).toString();
-                    }
+                // make the checkbox (current row -> first column of that row -> first HTML element in that column)
+                const checkbox = table.rows[i].children[0].children[0];
+                
+                // check if the checkbox is checked
+                if (checkbox.checked) {
+                    // find the portion of the html id that contains the question id
+                    let id = checkbox.id.match(/\d+/).toString();
+
+                    // send the updated question details to the microservice
+                    app.service('questions').update(
+                    id,
+                    {
+                        question: question.value,
+                        answers: answers
+                    });
+
+                    // clear inputs since the user submitted what they entered and can start a new entry
+                    clearFormData();
                 }
-            }      
-
-
-            // Create new question
-            app.service('questions').update(
-            id,
-            {
-                question: question.value,
-                answers: answers
-            });
-
-            // Clear inputs since the user submitted what they entered and can start a new entry
-            question.value = '';
-            answer1.value = '';
-            answer2.value = '';
-            answer3.value = '';
-            answer4.value = '';
+            }       
         }
 
 
 
         // FUNCTION: renderQuestion()
         // PURPOSE:
-        //  Each question in the questions array will be displayed on the website.
-        //  This function receives a single question and appends html to the appropriate div.
+        //  Each question that is stored by the microservice will be displayed in a table.
+        //  This function receives a question and appends a row to the table with the details for that question.
         // PARAMETERS:
         //  idea - an Event triggered by user action
         // RETURN: void
+
         function renderQuestion(question) {
-            // get the ideas div to append to and appendthe html
-            document.getElementById('questionsTable').innerHTML += 
+            table.innerHTML += 
             `
                 <tr>
                     <td>
@@ -214,22 +213,18 @@
 
 
 
-        // FUNCTION: renderQuestion()
+        // FUNCTION: handleOptionSelect()
         // PURPOSE:
-        //  Each question in the questions array will be displayed on the website.
-        //  This function receives a single question and appends html to the appropriate div.
-        // PARAMETERS:
-        //  idea - an Event triggered by user action
+        //  The user has selected an option from the following list: Create Question, Update Question, Remove Question.
+        //  Certain states are applied to the form in accordance with the option selected.
+        // PARAMETERS: void
         // RETURN: void
 
-        function getSelectedRadio() {
+        function handleOptionSelect() {
+            // determine which option was selected
             let selected = document.querySelector('input[name="operation"]:checked');
-            const question = document.getElementById("question");
-            const answer1 = document.getElementById("answer1");
-            const answer2 = document.getElementById("answer2");
-            const answer3 = document.getElementById("answer3");
-            const answer4 = document.getElementById("answer4");
-
+            
+            // input should be disabled only while Remove Question is selected
             if (selected.value === "removeQuestion") {
                 question.disabled = true;
                 answer1.disabled = true;
@@ -245,47 +240,53 @@
                 answer4.disabled = false;
             }
 
+            // the input boxes should only be autopopulated when Update Question is selected
             if (selected.value === "updateQuestion") {
-                table = document.getElementById("questionsTable");
                 numberOfRows = table.rows.length;
-                const collection = document.getElementById("questions").children;
+
+                // loop through the table one row at a time
                 for (let i = 0; i < numberOfRows; i++) {
                     const collection = table.rows[i].children[0].children;
                     for (let item of collection) {
-                        if (item.id.includes("question") && item.checked) {
+                        // make the checkbox (current row -> first column of that row -> first HTML element in that column)
+                        const checkbox = table.rows[i].children[0].children[0];
+                
+                        // check if the checkbox is checked
+                        if (checkbox.checked) {
+                            // get all the question details (current row -> second column of that row)
                             const questionInfo = table.rows[i].children[1].children;
-                            question.value = questionInfo[0].innerHTML;
+                            
+                            // get specifically the array of answers
                             const answerInfo = questionInfo[1].children;
+
+                            // copy the question details into the form
+                            question.value = questionInfo[0].innerHTML;
                             answer1.value = answerInfo[0].innerHTML;
                             answer2.value = answerInfo[1].innerHTML;
                             answer3.value = answerInfo[2].innerHTML;
                             answer4.value = answerInfo[3].innerHTML;
                         }
                     }
-                }    
-                
+                }      
             }
             else {
-                question.value = "";
-                answer1.value = "";
-                answer2.value = "";
-                answer3.value = "";
-                answer4.value = "";
+                clearFormData();
             }
         }
 
 
-        // FUNCTION: renderQuestion()
+
+        // FUNCTION: handleSubmit()
         // PURPOSE:
-        //  Each question in the questions array will be displayed on the website.
-        //  This function receives a single question and appends html to the appropriate div.
-        // PARAMETERS:
-        //  idea - an Event triggered by user action
+        //  The user has submitted the form. The appropriate action must be taken in accordance with the option they selected.
+        // PARAMETERS: void
         // RETURN: void
 
         function handleSubmit() {
+            // get the selected operation
             let selected = document.querySelector('input[name="operation"]:checked');
             
+            // call the appropriate function
             if (selected.value === "createQuestion") {
                 createQuestion();
             } 
@@ -299,29 +300,39 @@
 
 
 
+        // FUNCTION: clearFormData()
+        // PURPOSE:
+        //  Clear user input from the form.
+        // PARAMETERS: void
+        // RETURN: void
+
+        function clearFormData() {
+            question.value = "";
+            answer1.value = "";
+            answer2.value = "";
+            answer3.value = "";
+            answer4.value = "";
+        }
+
+
+
         // FUNCTION: init()
         // PURPOSE:
-        //  This function 
+        //  Whenever the page loads it must collect fresh data from the microservice.
         // PARAMETERS: void
         // RETURN: void
         async function init() {
-            // the 
+            // get the questions from the microservice 
             const questions = await app.service('questions').find();
 
-            // Add existing ideas to list
+            // add each question to the table
             questions.forEach(renderQuestion);
-
-            // Add idea in realtime
-            app.service('questions').on('created', renderQuestion);
         }
 
-        init();
-        let checkboxes = document.querySelectorAll("input[name=operation]");
-        checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', getSelectedRadio);
-        })
-       
 
+        // make ties between the web app and the microservice
+        init();
+        
     </script>
 
 </body>
