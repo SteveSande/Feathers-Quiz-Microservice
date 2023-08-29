@@ -1,5 +1,5 @@
 # Feathers-Quiz-Microservice #
-Adapted from <a href='https://www.youtube.com/watch?v=8y33WCVkLwc'>Traversy Media</a>
+Adapted from <a href='https://www.youtube.com/watch?v=8y33WCVkLwc'>Traversy Media</a>.
 
 This project is the foundation of a multiple choice quiz delivery service.
 It was written to gain familiarity with web dev technologies.
