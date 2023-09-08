@@ -64,7 +64,7 @@
     <script>
         // socket.io setup, the api service is on port 3030 under the name ideas
         // you can access the ideas service on this port using http://127.0.0.1:3030/ideas
-        const socket = io('http://localhost:3030');
+        const socket = io('https://feathers-quiz-microservice.onrender.com/questions');
 
         // init feathers app as app
         const app = feathers();
