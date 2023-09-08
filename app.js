@@ -12,6 +12,8 @@ const feathers = require('@feathersjs/feathers');
 // express provides the request-response framework
 const express = require('@feathersjs/express');
 
+const cors = require("cors");
+
 // socket.io allows a persistent client-server connection to be established
 // https://www.youtube.com/watch?v=ZKEqqIO7n-k
 const socketio = require('@feathersjs/socketio');
@@ -102,6 +104,15 @@ const app = express(feathers());
 // Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application’s request-response cycle.
 // The express.json() function is a built-in middleware function in Express. It parses incoming requests with JSON payloads
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+const corsOptions = {
+  origin: "*",
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 // app.configure() is deprecated
 // Config Socket.io realtime APIs

@@ -70,7 +70,7 @@
         const app = feathers();
 
         // register socket.io to talk to the server
-        app.configure(feathers.socketio(socket));
+        app.configure(feathers.socketio(socket, {timeout: 5000}));
 
         // the page elements will be used by many of the following functions
         const question = document.getElementById('question');
