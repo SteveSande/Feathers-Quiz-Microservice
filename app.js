@@ -106,13 +106,7 @@ const app = express(feathers());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const corsOptions = {
-  origin: "*",
-  credentials: true,
-  optionSuccessStatus: 200,
-};
 
-app.use(cors(corsOptions));
 
 // app.configure() is deprecated
 // Config Socket.io realtime APIs
